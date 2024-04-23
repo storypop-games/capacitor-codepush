@@ -4,9 +4,8 @@ import { LocalPackage } from "./localPackage";
 import { NativeAppInfo } from "./nativeAppInfo";
 import { DownloadProgress, ILocalPackage, IRemotePackage, Package } from "./package";
 import { Sdk } from "./sdk";
-import { Directory, Filesystem } from "@capacitor/filesystem";
+import {Directory, DownloadFileOptions, Filesystem} from "@capacitor/filesystem";
 import { FileUtil } from "./fileUtil";
-import { Http } from "@capacitor-community/http";
 
 /**
  * Defines a remote package, which represents an update package available for download.
@@ -52,13 +51,13 @@ export class RemotePackage extends Package implements IRemotePackage {
         await Filesystem.deleteFile({ directory: Directory.Data, path: file });
       }
 
-      await Http.downloadFile({
+      await Filesystem.downloadFile({
         url: this.downloadUrl,
         method: "GET",
-        filePath: file,
-        fileDirectory: Directory.Data,
+        path: file,
+        directory: Directory.Data,
         responseType: "blob"
-      });
+      } as DownloadFileOptions);
     } catch (e) {
       CodePushUtil.throwError(new Error("An error occured while downloading the package. " + (e && e.message) ? e.message : ""));
     } finally {
